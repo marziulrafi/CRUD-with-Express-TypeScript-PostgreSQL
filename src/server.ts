@@ -133,7 +133,7 @@ app.get('/users/:id', async (req: Request, res: Response) => {
 
 app.put('/users/:id', async (req: Request, res: Response) => {
   // console.log(req.params.id);
-  const {name, email} = req.body;
+  const { name, email } = req.body;
 
   try {
     const result = await pool.query(`UPDATE users SET name=$1, email=$2 WHERE id=$3 RETURNING *`, [name, email, req.params.id]);
@@ -188,6 +188,48 @@ app.delete('/users/:id', async (req: Request, res: Response) => {
 
 
 
+
+
+// ToDo CRUD
+
+app.post('/todos', async (req: Request, res: Response) => {
+  const { user_id, title } = req.body;
+
+  try {
+    const result = await pool.query(`INSERT INTO todos (user_id, title) VALUES($1, $2) RETURNING *`, [user_id, title])
+
+    res.status(201).json({
+      success: true,
+      message: "ToDo created!",
+      data: result.rows[0]
+    })
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
+})
+
+
+
+app.get("/todos", async (req: Request, res: Response) => {
+  try {
+    const result = await pool.query(`SELECT * FROM todos`)
+
+    res.status(200).json({
+      success: true,
+      message: "ToDos retrieved successfully",
+      data: result.rows
+    })
+
+  } catch (err: any) {
+    res.status(500).json({
+      success: false,
+      message: err.message
+    })
+  }
+})
 
 
 
