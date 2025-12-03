@@ -233,6 +233,15 @@ app.get("/todos", async (req: Request, res: Response) => {
 
 
 
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found!",
+    path: req.path
+  })
+})
+
+
 app.listen(port, () => {
   console.log(`Server app listening on port ${port}`)
 })
