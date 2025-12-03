@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express"
+import express, { NextFunction, Request, Response } from "express"
 import { Pool } from "pg"
 import dotenv from "dotenv";
 dotenv.config();
@@ -52,8 +52,17 @@ initDB()
 
 
 
+// Logger Middleware
 
-app.get('/', (req: Request, res: Response) => {
+const logger = (req: Request, res: Response, next: NextFunction) => {
+  console.log(`$[{new Date().toISOString()}] ${req.method} ${req.path}\n`)
+  
+  next()
+}
+
+
+
+app.get('/', logger, (req: Request, res: Response) => {
   res.send('Hello!')
 })
 
