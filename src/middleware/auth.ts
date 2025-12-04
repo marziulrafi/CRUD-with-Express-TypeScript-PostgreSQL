@@ -2,8 +2,8 @@ import { NextFunction, Request, Response } from "express"
 import jwt, { JwtPayload } from "jsonwebtoken"
 import config from "../config"
 
-const auth = () => {
-    
+const auth = (...roles: string[]) => {
+
     return async (req: Request, res: Response, next: NextFunction) => {
         try {
             const token = req.headers.authorization
@@ -14,9 +14,15 @@ const auth = () => {
                 })
             }
 
-            const decoded = jwt.verify(token, config.jwtSecret as string)
+            const decoded = jwt.verify(token, config.jwtSecret as string) as JwtPayload
 
-            req.user = decoded as JwtPayload
+            req.user = decoded
+
+            if (roles.length && !roles.includes(decoded.role)) {
+                return res.status(500).json({
+                    error: "Unauthorized!"
+                })
+            }
 
             next()
 
